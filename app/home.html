@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Place Bid</title>
+
+    <link href="./css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="./css/app.css" rel="stylesheet" id="app-css">
+    <link href="./css/login.css" rel="stylesheet" id="login-css">
+    <link href="./css/home.css" rel="stylesheet" id="home-css">
+
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/jquery.validate.min.js"></script>
+    <script src="./js/jquery.cookie.js"></script>
+    <script src="./js/web3.min.js"></script>
+
+    <script src="./js/app.js"></script>
+    <script src="./js/network.js"></script>
+    <script src="./js/profile.js"></script>
+    <script src="./js/auction.js"></script>
+    <script src="./js/home.js"></script>
+    <!------ Include the above in your HEAD tag ---------->
+</head>
+
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="h3">
+
+                <h2 class="text-center headerRow">Place Bid</h2>
+            </div>
+    </nav>
+    <div class="container theme-showcase" role="main">
+        <div id="sidebar-wrapper" class="sidebar-toggle">
+            <h3 class="text-center headerRow">New Auction</h3>
+            <div class="vgap"></div>
+            <div class="col-lg-12">
+                <form id="login-form" role="form" style="display: block;">
+                    <div class="form-group">
+                        <input type="text" name="assetName" id="assetName" tabindex="1" class="form-control" placeholder="Asset Name" value="">
+                    </div>
+                    <div class="form-group">
+                        <input type="number" name="assetPrice" id="assetPrice" tabindex="2" placeholder="Base Price" pattern="^[0-9]" required name="price" min="0" step="10" class="form-control" placeholder="Asset Base Price">
+                    </div>
+                    <div class="form-group">
+                        <input type="number" name="expiration" id="expiration" tabindex="3" class="form-control" pattern="^[0-9]" min="0" step="5" placeholder="Auction Tenure in Mins">
+                    </div>
+
+                    <div class="form-group">
+                        <div class="">
+                            <div class="col-sm-6 col-sm-offset-3">
+                                <input type="button" name="auction-submit" id="auction-submit" tabindex="4" class="form-control btn btn-login" onclick="createAuction()" value="Start">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col-md-8">
+                <h2>Active Auctions</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Asset</th>
+                                <th>Seller</th>
+                                <th>Base Price</th>
+                                <th>Current Bid</th>
+                                <th>Bidder</th>
+                                <th>Will End</th>
+                                <!-- <th></th> -->
+                            </tr>
+                        </thead>
+                        <!-- <tbody>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Seller</th>
+                                <th>Base Price</th>
+                                <th>Current Bid</th>
+                                <th>Bidder</th>
+                                <th>Will End</th>
+                            </tr>
+                        </tbody> -->
+                    </table>
+                </div>
+                </main>
+            </div>
+            <div class="col-md-4 col-sm-offset-9">
+                <!-- The right column of 4 -->
+                <div id="right-column">
+
+                    <div class="panel panel-success" id="statusPanel">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Ethereum Status</h3>
+                        </div>
+                        <div class="panel-body">
+                            <p></p>
+                            <p><span id="statusMessage"></span><span id="spinner"></span></p>
+                        </div>
+                    </div>
+                    <div class="panel panel-info" id="infoPanel">
+                        <div class="panel-heading">
+                            <h3 class="panel-title" id="profileName">What's going on here?</h3>
+                        </div>
+                        <div class="panel-body" id="infoPanelText">
+                            <p>
+                                Your Total Balance:
+                                <span id="totalBalance"></span>
+                                <br>
+                                <br> Your Asset Details: <span id="assets"></span>
+                                <br>
+                                <div>
+                                    Your can add 100 more balance to your account <span id="addBalance"></span>
+                                    <br><br>
+                                    <p><button id="addButton" class="form-control btn btn-login" onclick="addBalance()">Add Balance</button></p>
+                                </div>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+</body>
+
+</html>

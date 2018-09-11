@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Place Bid</title>
+
+    <link href="./css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="./css/app.css" rel="stylesheet" id="app-css">
+    <link href="./css/login.css" rel="stylesheet" id="login-css">
+    <!-- <link href="./css/home.css" rel="stylesheet" id="home-css"> -->
+
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/jquery.validate.min.js"></script>
+    <script src="./js/jquery.cookie.js"></script>
+
+    <script src="./js/app.js"></script>
+    <script src="./js/login.js"></script>
+    <script src="./js/network.js"></script>
+    <script src="./js/web3.min.js"></script>
+    <!------ Include the above in your HEAD tag ---------->
+</head>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="h3">
+
+            <h2 class="text-center headerRow">Place Bid</h2>
+        </div>
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="panel panel-login">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <a href="#" class="active" id="login-form-link">Login</a>
+                        </div>
+                        <div class="col-xs-6">
+                            <a href="#" id="register-form-link">Register</a>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <form id="login-form" role="form" style="display: block;" method="POST">
+                                <div class="form-group">
+                                    <input type="text" name="email" id="email" tabindex="1" class="form-control" autocomplete="email" placeholder="Email Address" value="">
+                                </div>
+                                <div class="form-group">
+                                    <input type="password" name="password" id="password" tabindex="2" class="form-control" autocomplete="current-password" placeholder="Password">
+                                </div>
+                                <!-- <div class="form-group text-center">
+                                    <input type="checkbox" tabindex="3" class="" name="remember" id="remember">
+                                    <label for="remember"> Remember Me</label>
+                                </div> -->
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-6 col-sm-offset-3">
+                                            <input type="button" onclick="doLogin()" name="login-submit" id="login-submit" tabindex="4" class="form-control btn btn-login" value="Log In">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="text-center">
+                                                <a href="#" tabindex="5" class="forgot-password">Forgot Password?</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> -->
+                            </form>
+                            <form id="register-form" role="form" style="display: none;" method="POST" novalidate>
+                                <div class="form-group">
+                                    <input type="text" name="name" id="name" tabindex="1" class="form-control" placeholder="Name" value="">
+                                </div>
+                                <div class="form-group">
+                                    <input type="email" name="email" id="email2" tabindex="2" class="form-control" autocomplete="email" placeholder="Email Address" value="">
+                                </div>
+                                <div class="form-group">
+                                    <input type="password" name="password" id="password2" tabindex="3" class="form-control" autocomplete="new-password" placeholder="Password">
+                                </div>
+                                <div class="form-group">
+                                    <input type="password" name="confirm-password" id="password3" tabindex="4" class="form-control" autocomplete="new-password" placeholder="Confirm Password">
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-6 col-sm-offset-3">
+                                            <input type="button" onclick="doRegistration()" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-register" value="Register Now">
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-md-offset-3">
+        <!-- The right column of 4 -->
+        <div id="right-column">
+
+            <div class="panel panel-success" id="statusPanel">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Ethereum Status</h3>
+                </div>
+                <div class="panel-body">
+                    <p></p>
+                    <p><span id="statusMessage"></span><span id="spinner"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</html>
