@@ -6,21 +6,21 @@ function updateProfile() {
             setStatus("There is something went wrong: " + err, "error");
         } else if (res) {
             name = res;
-            console.log(name);
+            // console.log(name);
             userRecordContract.getBalance.call(loggedInUser, function(err, res) {
                 hideSpinner();
                 if (err) {
                     setStatus("There is something went wrong: " + err, "error");
                 } else if (res) {
                     balance = res['c'][0];
-                    console.log(balance);
+                    // console.log(balance);
                     userRecordContract.getAssets.call(loggedInUser, function(err, res) {
                         hideSpinner();
                         if (err) {
                             setStatus("There is something went wrong: " + err, "error");
                         } else if (res) {
                             assets = res;
-                            console.log(assets);
+                            console.log("assets : " + assets);
                             setStatus("Profile Loaded Successfully", "success");
                             updateInfoPanel(name, balance, assets);
                             watchEvents();
@@ -52,6 +52,11 @@ function updateInfoPanel(name, balance, assets) {
 }
 
 function createAsset(assetName, callback) {
+    var filter = web3.eth.filter("latest");
+    filter.watch(function(err, block) {
+        // Call get block number on every block
+        // updateBlockNumber();
+    });
     assetRecordContract.createAsset(assetName, loggedInUser, { from: account }, function(err, res) {
         if (err != null) {
             setStatus("There is something went wrong: " + err.message, "error");
@@ -75,12 +80,6 @@ function createAsset(assetName, callback) {
         }
     });
 }
-
-var filter = web3.eth.filter("latest");
-filter.watch(function(err, block) {
-    // Call get block number on every block
-    // updateBlockNumber();
-});
 
 function watchEvents() {
     var events = assetRecordContract.allEvents();

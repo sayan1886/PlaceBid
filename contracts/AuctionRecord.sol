@@ -24,7 +24,7 @@ contract AuctionRecord {
     mapping (uint8 => Auction) public auctions;
     
     constructor () public {
-        
+        id = 0;
     }
     
     modifier auctionActive (uint8 _auctionId) {

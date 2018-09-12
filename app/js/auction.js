@@ -1,9 +1,3 @@
-// var filter = web3.eth.filter("latest");
-// filter.watch(function(err, block) {
-//     // Call get block number on every block
-//     // updateBlockNumber();
-// });
-
 function watchEvents() {
     var events = auctionRecordContract.allEvents();
 
@@ -38,6 +32,13 @@ $(document).ready(function() {
         assetRecordContract = AssetRecord.at(asset_contract_addr);
         auctionRecordContract = AuctionRecord.at(auction_contract_addr);
 
+        var filter = web3.eth.filter("latest");
+        filter.watch(function(err, block) {
+            // Call get block number on every block
+            // updateBlockNumber();
+        });
+        watchEvents();
+
         auctionRecordContract.getAuctionID(function(err, res) {
             if (err != null) {
                 setStatus("There is something went wrong: " + err.message, "error");
@@ -70,6 +71,7 @@ function createAuction() {
     } else {
         setStatus("Initiating Auction... (please wait)", "warning");
         showSpinner();
+        document.getElementById("auction-form").reset();
         createAsset(assetName, function(err, res) {
             if (err != null) {
                 setStatus("There is something went wrong: " + err.message, "error");
@@ -86,7 +88,7 @@ function createAuction() {
                                 setStatus("There is something went wrong: " + err.message, "error");
                                 hideSpinner();
                             } else {
-                                setStatus("Succesfully Connected to Ethereum Node.", "success");
+                                setStatus("Auction Created Successfully", "success");
                                 hideSpinner();
                                 auctionId = res['c'][0];
                                 updateAuctionTable(auctionId);
@@ -115,7 +117,7 @@ function updateAuctionTable(auctionId) {
     setStatus("Updating Auction... (please wait)", "warning");
     showSpinner();
     auctions = [];
-    for (i = 0; i < auctionId; i++) {
+    for (i = 1; i <= auctionId; i++) {
         getAuction(i, function(err, res) {
             if (err == null) {
                 auctions.push(res);

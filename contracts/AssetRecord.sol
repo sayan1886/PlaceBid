@@ -20,7 +20,7 @@ contract AssetRecord {
     event AssetUnsold(uint8 assetId, string owner, AssetCategory category);
 
     constructor () public {
-
+        id = 0;
     }
     
     modifier validAsset(uint8 _assetId) {
