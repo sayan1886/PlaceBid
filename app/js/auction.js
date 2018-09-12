@@ -1,3 +1,9 @@
+// var filter = web3.eth.filter("latest");
+// filter.watch(function(err, block) {
+//     // Call get block number on every block
+//     // updateBlockNumber();
+// });
+
 function watchEvents() {
     var events = auctionRecordContract.allEvents();
 
@@ -10,10 +16,41 @@ function watchEvents() {
     });
 }
 
-window.onload = function() {
-    retriveFromLocal();
-    //need to check for auctions
-}
+$(document).ready(function() {
+    getContractAddress(function(user_addr, asset_addr, auction_addr, error) {
+        if (error != null) {
+            setStatus("Cannot find network. Please run an Ethereum node or use Metamask.", "error");
+            console.log(error);
+            throw "Cannot load contract address";
+        }
+        setStatus("Succesfully Connected to Ethereum Node.", "success");
+
+        web3.eth.getAccounts(function(err, accs) {
+            if (err != null) {
+                alert("There was an error fetching your accounts.");
+                return;
+            }
+            accounts = accs;
+            account = accounts[0];
+        });
+
+        userRecordContract = UserRecord.at(user_contract_addr);
+        assetRecordContract = AssetRecord.at(asset_contract_addr);
+        auctionRecordContract = AuctionRecord.at(auction_contract_addr);
+
+        auctionRecordContract.getAuctionID(function(err, res) {
+            if (err != null) {
+                setStatus("There is something went wrong: " + err.message, "error");
+                hideSpinner();
+            } else {
+                setStatus("Succesfully Connected to Ethereum Node.", "success");
+                hideSpinner();
+                auctionId = res['c'][0];
+                updateAuctionTable(auctionId);
+            }
+        });
+    });
+});
 
 function createAuction() {
 
@@ -62,119 +99,61 @@ function createAuction() {
     }
 }
 
-function getAssetName(auctionId, callback) {
-    auctionRecordContract.getOwnerfunction(auctionId, function(err, res) {
-        callback(err, res);
+function getAuction(auctionId, callback) {
+    auctionRecordContract.getAuction(auctionId, function(err, res) {
+        if (err == null) {
+            callback(err, res);
+        }
     });
 }
-
-function getOwner(auctionId, callback) {
-    auctionRecordContract.getOwnerfunction(auctionId, function(err, res) {
-        callback(err, res);
-    });
-}
-
-function getBasePrice(auctionId, callback) {
-    auctionRecordContract.getOwnerfunction(auctionId, function(err, res) {
-        callback(err, res);
-    });
-}
-
-function getCurrentBid(auctionId, callback) {
-    auctionRecordContract.getOwnerfunction(auctionId, function(err, res) {
-        callback(err, res);
-    });
-}
-
-function getCurrentBidder(auctionId, callback) {
-    auctionRecordContract.getOwnerfunction(auctionId, function(err, res) {
-        callback(err, res);
-    });
-}
-
-// function getCurrentBidder(auctionId, callback) {
-//     auctionRecordContract.getOwnerfunction(auctionId, function(err, res) {
-//         callback(err, res);
-//     });
-// }
 
 function isOwner(owner) {
     return loggedInUser.toUpperCase() === owner.toUpperCase();
 }
 
-function getRow(row, callback) {
-    var auction = [];
-    auction.push({ "#": auctionId });
-    getAssetName(row, function(err, res) {
-        if (err != null) {
-            setStatus("There is something went wrong: " + err.message, "error");
-            hideSpinner();
-        } else {
-            auction.push({ "Asset": res });
-            getOwner(row, function(err, res) {
-                if (err != null) {
-                    setStatus("There is something went wrong: " + err.message, "error");
-                    hideSpinner();
-                } else {
-                    auction.push({ "Seller": res });
-                    getBasePrice(row, function(err, res) {
-                        if (err != null) {
-                            setStatus("There is something went wrong: " + err.message, "error");
-                            hideSpinner();
-                        } else {
-                            auction.push({ "Base Price": res[c][0] });
-                            getCurrentBid(row, function(err, res) {
-                                if (err != null) {
-                                    setStatus("There is something went wrong: " + err.message, "error");
-                                    hideSpinner();
-                                } else {
-                                    auction.push({ "Current Bid": res[c][0] });
-                                    getCurrentBidder(row, function(err, res) {
-                                        if (err != null) {
-                                            setStatus("There is something went wrong: " + err.message, "error");
-                                            hideSpinner();
-                                        } else {
-                                            auction.push({ "Bidder": res });
-                                            // getCurrentBidder(auctionId, function(err, res) {
-                                            //     if (err != null) {
-                                            //         setStatus("There is something went wrong: " + err.message, "error");
-                                            //         hideSpinner();
-                                            //     } else {
-                                            //         auction.push({ "Bidder": res });
-                                            //     }
-                                            // });
-                                            auctions.push(auction);
-                                            callback(auction);
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    });
-                }
-            });
-        }
-    });
-}
-
 function updateAuctionTable(auctionId) {
-    console.log(auctionId);
-    setStatus("Updating Auction Table ... (please wait)", "warning");
-    auctions.push();
+    setStatus("Updating Auction... (please wait)", "warning");
     showSpinner();
-    var rows = [];
-    //TODO:check here
-    for (var i = 0; i <= auctionId; auctionId++) {
-        rows.push(i);
-    }
-    rows.forEach(function(item, idx) {
-        getRow(item, function(auction) {
-            auctions.push(auction);
-            if (idx == (rows.length - 1)) {
-                setStatus("Auction Table updation comeplete.", "success");
+    auctions = [];
+    for (i = 0; i < auctionId; i++) {
+        getAuction(i, function(err, res) {
+            if (err == null) {
+                auctions.push(res);
+
+                if (auctions.length == auctionId) {
+                    setStatus("Succesfully Updated Table.", "success");
+                    hideSpinner();
+                    prepareTable(auctions);
+                }
+            } else {
+                setStatus("There is something went wrong: " + err.message, "error");
                 hideSpinner();
             }
-        })
+        });
+    }
+}
+
+function prepareTable(auctions) {
+    // rows = [];
+    // for (i = 0; i < auctions.length; i++) {
+    //     console.log("Row" + i + " : " + auctions[i]);
+    //     for (j = 0; j < auctions[i].length; j++) {
+    //         console.log("Column" + j + " : " + auctions[i][j]);
+    //     }
+    // }
+    var tableBody = document.getElementById('dynamic_body');
+
+    auctions.forEach(function(rowData) {
+        var row = document.createElement('tr');
+
+        rowData.forEach(function(cellData) {
+            var cell = document.createElement('td');
+            cell.appendChild(document.createTextNode(cellData));
+            row.appendChild(cell);
+        });
+
+        tableBody.appendChild(row);
     });
 
+    table.appendChild(tableBody);
 }

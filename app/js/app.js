@@ -13,8 +13,6 @@ var userRecordContract;
 var assetRecordContract;
 var auctionRecordContract;
 
-var auctions = [];
-
 var loggedInUser;
 
 function setStatus(message, category) {
@@ -80,7 +78,6 @@ function saveToLocal() {
     //Save
     localStorage.setItem("account", account);
     localStorage.setItem("loggedInUser", loggedInUser);
-    localStorage.setItem("auctions", JSON.stringify(auctions));
 }
 
 function retriveFromLocal() {

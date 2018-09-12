@@ -76,6 +76,11 @@ function createAsset(assetName, callback) {
     });
 }
 
+var filter = web3.eth.filter("latest");
+filter.watch(function(err, block) {
+    // Call get block number on every block
+    // updateBlockNumber();
+});
 
 function watchEvents() {
     var events = assetRecordContract.allEvents();
