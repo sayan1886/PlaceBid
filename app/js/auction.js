@@ -2,6 +2,15 @@ auctions = [];
 
 
 function watchEvents() {
+    // var filter = web3.eth.filter("latest");
+    // filter.watch(function(err, block) {
+    //     // Call get block number on every block
+    //     if (!err) {
+    //         // console.log("filter : " + block);
+    //     }
+    // });
+    // var eventsAll = auctionRecordContract.allEvents('latest');
+
     var eventsAll = auctionRecordContract.allEvents();
 
     eventsAll.watch(function(err, res) {
@@ -35,7 +44,7 @@ function watchEvents() {
                     }
                 });
             } else if (res.event == "AuctionClosed") {
-
+                console.log("Auction Closed for : " + res.args["auctionId"]['c'][0]);
             }
             auctionRecordContract.getAuctionID(function(err, res) {
                 if (err != null) {
@@ -96,8 +105,23 @@ $(document).ready(function() {
 });
 
 function checkAuctionForExpiry() {
-
+    for (i = 0; i < auctionId; i++) {
+        if (new Date(auctions[2][6]["c"][0] * 1000) - new Date() <= 0) {
+            auctionRecordContract.getAuctionStatus(auctionId, function(err, res) {
+                if (err != null) {
+                    if (res['c'][0] != 2) { //Active
+                        auctionRecordContract.closeAuction(auctionId, { from: account }, function(err, res) {
+                            if (err) {
+                                setStatus("There is something went wrong: " + err.message, "error");
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    }
 }
+
 
 function createAuction() {
 
@@ -185,7 +209,7 @@ function updateAuctionTable(auctionId) {
                 hideSpinner();
             }
         });
-        getAuctions(auctionId, auctionStatus);
+        // getAuctions(auctionId, auctionStatus);
     }
 }
 
@@ -245,7 +269,7 @@ function prepareTable(auctions, auctionStatus) {
         var j = 0;
         rowData.forEach(function(cellData) {
             var cell = document.createElement('td');
-            auctionClosed = (auctionStatus[i] == 2);
+            auctionClosed = (auctionStatus[i] == 1);
             if (j == 0 || j == 3 || j == 4) {
                 cellData = cellData['c'][0];
                 cell.appendChild(document.createTextNode(cellData));

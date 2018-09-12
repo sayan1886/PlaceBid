@@ -89,7 +89,6 @@ function addBalance() {
         if (err) {
             setStatus("There is something went wrong: " + err, "error");
         } else if (res) {
-            console.log("assets : " + assets);
             setStatus("Balance Added Successfully", "success");
             updateProfile();
         } else {

@@ -3,8 +3,8 @@ pragma solidity ^0.4.22;
 
 contract AuctionRecord {
 
-    enum AuctionStatus {Active, End}
-    enum AuctionResult {Sold, Unsold, Pending}
+    enum AuctionStatus {Active, End} //0,1
+    enum AuctionResult {Sold, Unsold, Pending} //0,1,2
 
     //Events
     event AuctionCreated(uint8 auctionId, string assetName, string ownedBy, uint8 basePrice, uint256 expiry);
