@@ -174,7 +174,7 @@ img {
 }
 
 .btn-login {
-    background-color: #59B2E0;
+    background-color: #428bca;
     outline: none;
     color: #fff;
     font-size: 14px;
@@ -182,7 +182,7 @@ img {
     font-weight: normal;
     padding: 10px 0;
     text-transform: uppercase;
-    border-color: #59B2E6;
+    border-color: #357ebd;
 }
 
 .text-center {

@@ -48,6 +48,12 @@ contract UserRecord {
         users[_userEmail].balance += _balance;
         return true;
     }
+
+    function deductBalance (string _userEmail, uint8 _balance) validUser(_userEmail) public payable returns (bool _success) {
+        require(_balance > 0);
+        users[_userEmail].balance -= _balance;
+        return true;
+    }
     
     function getAssets (string _userEmail) validUser(_userEmail) public view returns (uint8[] _assets) {
         return users[_userEmail].assets;

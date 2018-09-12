@@ -9,6 +9,34 @@ function watchEvents() {
             console.log("Error: " + err);
         } else {
             console.log("Got an event: " + res);
+            if (res.event == "AuctionBidPlaced") {
+                previousBidder = res.args["previousBidder"];
+                currentBidder = res.args["currentBidder"];
+                previousBid = res.args["previousBid"]['c'][0];
+                currentBid = res.args["currentBid"]['c'][0];
+                assetName = res.args["assetName"];
+                userRecordContract.deductBalance(currentBidder, currentBid, { from: account }, function(err, res) {
+                    if (err != null) {
+                        setStatus("There is something went wrong: " + err.message, "error");
+                    } else {
+                        if (previousBidder.length > 0) {
+                            userRecordContract.deductBalance(previousBidder, previousBid, { from: account }, function(err, res) {
+                                if (err != null) {
+                                    setStatus("There is something went wrong: " + err.message, "error");
+                                } else {
+                                    updateProfile();
+                                    setStatus("Succesfully uppdated balances.", "success");
+                                }
+                            });
+                            if (loggedInUser == previousBidder) {
+                                showOutBidded(assetName);
+                            }
+                        }
+                    }
+                });
+            } else if (res.event == "AuctionClosed") {
+
+            }
             auctionRecordContract.getAuctionID(function(err, res) {
                 if (err != null) {
                     setStatus("There is something went wrong: " + err.message, "error");
@@ -22,26 +50,6 @@ function watchEvents() {
                     updateAuctionTable(auctionId);
                 }
             });
-        }
-    });
-
-    var auctionCloseEvent = auctionRecordContract.AuctionClosed({ fromBlock: 0, toBlock: 'latest' });
-    auctionCloseEvent.watch(function(err, res) {
-        //TODO: Transfer asset ownership
-        if (err) {
-            console.log("Error: " + err);
-        } else {
-            console.log("Got an event: " + res);
-        }
-    });
-
-    var auctionNewBidEvent = auctionRecordContract.AuctionBidPlaced({ fromBlock: 0, toBlock: 'latest' });
-    auctionNewBidEvent.watch(function(err, res) {
-        //TODO: Transfer balnce to old owner
-        if (err) {
-            console.log("Error: " + err);
-        } else {
-            console.log("Got an event: " + res);
         }
     });
 }
@@ -181,6 +189,34 @@ function updateAuctionTable(auctionId) {
     }
 }
 
+function createBid(auctionid, itemPrice, itemName) {
+    setStatus("Placing Bid for You...(please wait).", "warning");
+    showSpinner();
+    userRecordContract.getBalance(loggedInUser, function(err, res) {
+        if (err) {
+            hideSpinner();
+            setStatus("There is something went wrong: " + err, "error");
+        } else if (res) {
+            balance = res['c'][0];
+            if (balance <= itemPrice) {
+                hideSpinner();
+                setStatus("Insufficuent Balance for this Bid: ", "error");
+                showInsufficientBalanceAlert(balance, itemPrice, itemName)
+            } else {
+                auctionRecordContract.placeBid(auctionid, itemPrice, loggedInUser, { from: account }, function(err, res) {
+                    hideSpinner();
+                    if (err) {
+                        setStatus("There is something went wrong: ", "error");
+                    } else if (res) {
+                        setStatus("Bid Placed Succesfully: ", "success");
+                    }
+                });
+            }
+        }
+    });
+}
+
+
 function getAuctions(auctionId, auctionStatus) {
     for (i = 1; i <= auctionId; i++) {
         getAuction(i, function(err, res) {
@@ -225,13 +261,15 @@ function prepareTable(auctions, auctionStatus) {
                     row.style.color = "rgb(57, 80, 214)"; //Blue
                     var button = document.createElement('input');
                     button.type = "button";
-                    button.className = "form-control btn btn-login";
+                    button.className = "btn btn-primary";
                     button.value = "Place Bid";
                     button.id = "place-auction-" + (i + 1);
-                    button.addEventListener("click", function() {
-                        placeBid();
+                    button.addEventListener("click", function(sender) {
+                        placeBid(sender);
                     });
                     cell.appendChild(button);
+                    // buttonId = "place-auction-" + (i + 1);
+                    // cell.innerHTML = cellButton(buttonId);
                 } else {
                     row.style.color = "rgb(230, 146, 50)"; //Yellow
                     cellData = "";
@@ -250,6 +288,41 @@ function prepareTable(auctions, auctionStatus) {
     // table.appendChild(tableBody);
 }
 
-function placeBid() {
-    console.log("Placing Bid");
+function placeBid(sender) {
+    // console.log("Placing Bid  for " + sender.toElement.id);
+    buttonid = sender.target.id;
+    auctionid = buttonid.split('-')[2];
+    itemDetails = auctions[auctionid - 1];
+    itemName = itemDetails[1];
+    itemPrice = itemDetails[3]['c'][0] + 10;
+    if (itemDetails[5].length > 0) {
+        itemPrice = itemDetails[4]['c'][0] + 10;
+    }
+    BootstrapDialog.show({
+        title: 'Information!',
+        message: "You are going to submit a bid for " + itemName + " . This will cost you " + itemPrice + ". Are sure to continue? ",
+        buttons: [{
+            label: 'Proceed',
+            action: function(dialog) {
+                dialog.close();
+                createBid(auctionid, itemPrice, itemName);
+            }
+        }, {
+            label: 'Fallback',
+            action: function(dialog) {
+                dialog.close();
+            }
+        }]
+    });
+    return false;
+}
+
+function showInsufficientBalanceAlert(balance, itemPrice, itemName) {
+    BootstrapDialog.alert('You have insuffiecient balance. Please add balance to continue.');
+}
+
+function showOutBidded(assetName) {
+    BootstrapDialog.show({
+        message: 'You are outbidded for ' + assetName + ". Please place New Bid!"
+    });
 }
