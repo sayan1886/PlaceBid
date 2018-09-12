@@ -1,26 +1,25 @@
 function updateProfile() {
     var name, balance, assets;
-    userRecordContract.getUserName.call(loggedInUser, function(err, res) {
+    userRecordContract.getUserName(loggedInUser, function(err, res) {
         hideSpinner();
         if (err) {
             setStatus("There is something went wrong: " + err, "error");
         } else if (res) {
             name = res;
             // console.log(name);
-            userRecordContract.getBalance.call(loggedInUser, function(err, res) {
+            userRecordContract.getBalance(loggedInUser, function(err, res) {
                 hideSpinner();
                 if (err) {
                     setStatus("There is something went wrong: " + err, "error");
                 } else if (res) {
                     balance = res['c'][0];
                     // console.log(balance);
-                    userRecordContract.getAssets.call(loggedInUser, function(err, res) {
+                    userRecordContract.getAssets(loggedInUser, function(err, res) {
                         hideSpinner();
                         if (err) {
                             setStatus("There is something went wrong: " + err, "error");
                         } else if (res) {
                             assets = res;
-                            console.log("assets : " + assets);
                             setStatus("Profile Loaded Successfully", "success");
                             updateInfoPanel(name, balance, assets);
                             watchEvents();
@@ -39,6 +38,7 @@ function updateProfile() {
 }
 
 function updateInfoPanel(name, balance, assets) {
+    console.log("updating proile")
     var profileHtml = document.getElementById("profileName");
     html = "Hi! " + name;
     profileHtml.innerHTML = html;
@@ -65,18 +65,35 @@ function createAsset(assetName, callback) {
                 if (err != null) {
                     setStatus("There is something went wrong: " + err.message, "error");
                 } else {
-                    assetid = res['c'][0];
-                    result = res;
+                    assetid = res['c'][0] + 1;
                     userRecordContract.addAsset(loggedInUser, assetid, { from: account }, function(err, res) {
                         if (err != null) {
                             callback(err, res);
                         } else {
-                            callback(err, result);
+                            callback(err, assetid);
                             updateProfile();
                         }
                     });
                 }
             });
+        }
+    });
+}
+
+function addBalance() {
+    var balance = 100;
+    setStatus("Updating your balance.. (please wait)", "warning");
+    showSpinner();
+    userRecordContract.addBalance(loggedInUser, balance, { from: account }, function(err, res) {
+        hideSpinner();
+        if (err) {
+            setStatus("There is something went wrong: " + err, "error");
+        } else if (res) {
+            console.log("assets : " + assets);
+            setStatus("Balance Added Successfully", "success");
+            updateProfile();
+        } else {
+            setStatus("Fetch Error", "warning");
         }
     });
 }

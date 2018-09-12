@@ -7,7 +7,6 @@ contract UserRecord {
         string userEmail;
         string password;
         uint8 balance;
-        uint8 earnedBalance;
         uint8 [] assets; //asset id
     }
 
@@ -46,13 +45,7 @@ contract UserRecord {
 
     function addBalance (string _userEmail, uint8 _balance) validUser(_userEmail) public payable returns (bool _success) {
         require(_balance > 0);
-        add(users[_userEmail].balance, _balance);
-        return true;
-    }
-
-    function addEarnedBalance (string _userEmail, uint8 _earnedBalance) validUser(_userEmail) public payable returns (bool _success) {
-        require(_earnedBalance > 0);
-        add(users[_userEmail].earnedBalance, _earnedBalance);
+        users[_userEmail].balance += _balance;
         return true;
     }
     
@@ -69,7 +62,7 @@ contract UserRecord {
     }
 
     function getBalance (string _userEmail) validUser(_userEmail) public view returns (uint8 _totalBalance) {
-        return add(users[_userEmail].balance, users[_userEmail].earnedBalance);
+        return users[_userEmail].balance;
     }
     
     function isValidPassword (string _userEmail, string _password) validUser(_userEmail) public view returns (bool _valid) {
@@ -84,8 +77,4 @@ contract UserRecord {
             return keccak256(abi.encodePacked(a)) == keccak256(abi.encodePacked(b));
         }
     }   
-
-    function add(uint8 _a, uint8 _b) internal pure returns(uint8){
-        return _a + _b;
-    } 
 }

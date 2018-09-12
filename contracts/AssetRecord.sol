@@ -16,7 +16,7 @@ contract AssetRecord {
 
     //Events
     event AssetCreated(uint8 assetId, string assetName, string ownedBy, AssetCategory category);
-    event AssetOwnerChnaged(uint8 assetId, string owner, string newObwer, AssetCategory category);
+    event AssetOwnerChnaged(uint8 assetId, string owner, string newOwner, AssetCategory category);
     event AssetUnsold(uint8 assetId, string owner, AssetCategory category);
 
     constructor () public {

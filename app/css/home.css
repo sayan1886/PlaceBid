@@ -39,8 +39,8 @@ img {
 }
 
 .row {
-    margin-right: -40px;
-    margin-left: 250px;
+    margin-right: -80px;
+    margin-left: -80px;
 }
 
 .col-md-4 {
@@ -187,7 +187,7 @@ img {
 
 .text-center {
     text-align: center;
-    color: white;
+    color: black;
 }
 
 .col-md-8 {
@@ -197,4 +197,12 @@ img {
 
 .col-md-8 {
     width: 80%;
+}
+
+.closed {
+    color: rgb(247, 7, 7);
+}
+
+.owned {
+    color: rgb(230, 146, 50);
 }
