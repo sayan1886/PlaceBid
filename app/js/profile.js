@@ -98,13 +98,33 @@ function addBalance() {
 }
 
 function watchEvents() {
-    var events = assetRecordContract.allEvents();
+    var filter = web3.eth.filter("latest");
+    filter.watch(function(err, block) {
+        // Call get block number on every block
+        if (!err) {
+            console.log("filter : " + block);
+        }
+    });
 
-    events.watch(function(err, msg) {
+    var eventsAllUser = userRecordContract.allEvents({ fromBlock: 'latest' });
+
+    eventsAllUser.watch(function(err, res) {
         if (err) {
             console.log("Error: " + err);
         } else {
-            console.log("Got an event: " + msg.event);
+            //TODO: need to change to events based Balance and Asset update for user
+            console.log("Got an event: " + res);
+        }
+    });
+
+    var eventsAllAssets = assetRecordContract.allEvents({ fromBlock: 'latest' });
+
+    eventsAllAssets.watch(function(err, res) {
+        if (err) {
+            console.log("Error: " + err);
+        } else {
+            //TODO: need to change to events based Aset handling
+            console.log("Got an event: " + res);
         }
     });
 }

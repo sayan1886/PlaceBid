@@ -2,16 +2,15 @@ auctions = [];
 
 
 function watchEvents() {
-    // var filter = web3.eth.filter("latest");
-    // filter.watch(function(err, block) {
-    //     // Call get block number on every block
-    //     if (!err) {
-    //         // console.log("filter : " + block);
-    //     }
-    // });
-    // var eventsAll = auctionRecordContract.allEvents('latest');
+    var filter = web3.eth.filter("latest");
+    filter.watch(function(err, block) {
+        // Call get block number on every block
+        if (!err) {
+            console.log("filter : " + block);
+        }
+    });
 
-    var eventsAll = auctionRecordContract.allEvents();
+    var eventsAll = auctionRecordContract.allEvents({ fromBlock: 'latest' });
 
     eventsAll.watch(function(err, res) {
         if (err) {
@@ -64,7 +63,7 @@ function watchEvents() {
 }
 
 $(document).ready(function() {
-    setInterval(function() { checkAuctionForExpiry() }, 60 * 1000); //check every minutes
+    setInterval(function() { checkAuctionForExpiry() }, 10 * 1000); //check every minutes
     getContractAddress(function(user_addr, asset_addr, auction_addr, err) {
         if (err != null) {
             setStatus("Cannot find network. Please run an Ethereum node or use Metamask.", "error");
@@ -106,11 +105,13 @@ $(document).ready(function() {
 
 function checkAuctionForExpiry() {
     for (i = 0; i < auctionId; i++) {
-        if (new Date(auctions[2][6]["c"][0] * 1000) - new Date() <= 0) {
-            auctionRecordContract.getAuctionStatus(auctionId, function(err, res) {
-                if (err != null) {
-                    if (res['c'][0] != 2) { //Active
-                        auctionRecordContract.closeAuction(auctionId, { from: account }, function(err, res) {
+        timdiff = new Date(auctions[i][6]["c"][0] * 1000) - new Date().getTime();
+        if (timdiff <= 0) {
+            aid = i + 1; //auction starts from 1
+            getAuctionStatus(aid, function(err, res) {
+                if (err == null) {
+                    if (res['c'][0] == 0) { //Active
+                        auctionRecordContract.closeAuction(aid, { from: account }, function(err, res) {
                             if (err) {
                                 setStatus("There is something went wrong: " + err.message, "error");
                             }
@@ -136,7 +137,7 @@ function createAuction() {
         setStatus("Criteria Mismatch For Asset Name", "error");
     } else if (assetPrice <= 0) {
         setStatus("Criteria Mismatch For Base Price", "error");
-    } else if (expiration < 10) {
+    } else if (expiration < 1) {
         setStatus("Criteria Mismatch For Auction Expiry", "error");
     } else {
         setStatus("Initiating Auction... (please wait)", "warning");
@@ -174,7 +175,7 @@ function createAuction() {
 }
 
 function getAuction(auctionId, callback) {
-    auctionRecordContract.getAuction(auctionId, loggedInUser, function(err, res) {
+    auctionRecordContract.getAuction(auctionId, function(err, res) {
         if (err == null) {
             callback(err, res);
         }
@@ -193,25 +194,25 @@ function isOwner(owner) {
     return loggedInUser.toUpperCase() === owner.toUpperCase();
 }
 
-function updateAuctionTable(auctionId) {
-    setStatus("Updating Auction... (please wait)", "warning");
-    showSpinner();
-    auctionStatus = [];
-    for (i = 1; i <= auctionId; i++) {
-        getAuctionStatus(i, function(err, res) {
-            if (err == null) {
-                auctionStatus.push(res['c'][0]);
-                if (auctionStatus.length == auctionId) {
-                    getAuctions(auctionId, auctionStatus);
-                }
-            } else {
-                setStatus("There is something went wrong: " + err.message, "error");
-                hideSpinner();
-            }
-        });
-        // getAuctions(auctionId, auctionStatus);
-    }
-}
+// function updateAuctionTable(auctionId) {
+//     setStatus("Updating Auction... (please wait)", "warning");
+//     showSpinner();
+//     auctionStatus = [];
+//     for (i = 1; i <= auctionId; i++) {
+//         getAuctionStatus(i, function(err, res) {
+//             if (err == null) {
+//                 auctionStatus.push(res['c'][0]);
+//                 if (auctionStatus.length == auctionId) {
+//                     getAuctions(auctionId, auctionStatus);
+//                 }
+//             } else {
+//                 setStatus("There is something went wrong: " + err.message, "error");
+//                 hideSpinner();
+//             }
+//         });
+//         // getAuctions(auctionId, auctionStatus);
+//     }
+// }
 
 function createBid(auctionid, itemPrice, itemName) {
     setStatus("Placing Bid for You...(please wait).", "warning");
@@ -241,7 +242,7 @@ function createBid(auctionid, itemPrice, itemName) {
 }
 
 
-function getAuctions(auctionId, auctionStatus) {
+function getAuctions(auctionId) {
     for (i = 1; i <= auctionId; i++) {
         getAuction(i, function(err, res) {
             if (err == null) {
@@ -260,6 +261,12 @@ function getAuctions(auctionId, auctionStatus) {
     }
 }
 
+function updateAuctionTable(auctionId) {
+    setStatus("Updating Auction... (please wait)", "warning");
+    showSpinner();
+    getAuctions(auctionId);
+}
+
 function prepareTable(auctions, auctionStatus) {
     var tableBody = document.getElementById('dynamicBody');
     tableBody.innerHTML = '';
@@ -269,19 +276,29 @@ function prepareTable(auctions, auctionStatus) {
         var j = 0;
         rowData.forEach(function(cellData) {
             var cell = document.createElement('td');
-            auctionClosed = (auctionStatus[i] == 1);
-            if (j == 0 || j == 3 || j == 4) {
+            if (j == 0 || j == 3 || j == 4) { //Id , and prices
                 cellData = cellData['c'][0];
                 cell.appendChild(document.createTextNode(cellData));
-            } else if (j == 6) {
+            } else if (j == 6) { // Date
                 date = new Date(cellData['c'][0] * 1000).toLocaleString();
                 cell.appendChild(document.createTextNode(date));
-            } else if (j == 7) {
-                if (auctionClosed) {
+            } else if (j == 7) { //Status
+                cellData = cellData['c'][0];
+                if (cellData == 0) cellData = "Sold"
+                else if (cellData == 1) cellData = "Unsold"
+                else cellData = "Pending"
+                cell.appendChild(document.createTextNode(cellData));
+            } else if (j == 8) {
+                cellData = cellData['c'][0];
+                if (cellData == 1) {
                     row.style.color = "rgb(247, 7, 7)"; //Red
                     cellData = "";
                     cell.appendChild(document.createTextNode(cellData));
-                } else if (cellData) {
+                } else if (loggedInUser == rowData[2] || loggedInUser == rowData[5]) { //Owner || //Current Bidder
+                    row.style.color = "rgb(230, 146, 50)"; //Yellow
+                    cellData = "";
+                    cell.appendChild(document.createTextNode(cellData));
+                } else {
                     row.style.color = "rgb(57, 80, 214)"; //Blue
                     var button = document.createElement('input');
                     button.type = "button";
@@ -294,10 +311,6 @@ function prepareTable(auctions, auctionStatus) {
                     cell.appendChild(button);
                     // buttonId = "place-auction-" + (i + 1);
                     // cell.innerHTML = cellButton(buttonId);
-                } else {
-                    row.style.color = "rgb(230, 146, 50)"; //Yellow
-                    cellData = "";
-                    cell.appendChild(document.createTextNode(cellData));
                 }
             } else {
                 cell.appendChild(document.createTextNode(cellData));

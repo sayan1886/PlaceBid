@@ -28,7 +28,7 @@ contract AssetRecord {
         _;
     }
 
-    function createAsset (string _assetName, string _ownedBy) public payable returns (uint8 _assetID) {
+    function createAsset (string _assetName, string _ownedBy) public payable {
         require(bytes(assets[_assetId].assetName).length == 0);
         uint8 _assetId = ++id;
         assets[_assetId].assetId = _assetId;
@@ -36,22 +36,19 @@ contract AssetRecord {
         assets[_assetId].ownedBy = _ownedBy;//owners email;
         assets[_assetId].category = AssetCategory.Owned;
         emit AssetCreated(_assetId, _assetName, _ownedBy, AssetCategory.Owned);
-        return _assetId;
     }
 
-    function setOwner(uint8 _assetId, string _newOwner) validAsset(_assetId) public payable returns (bool _success) {
+    function setOwner(uint8 _assetId, string _newOwner) validAsset(_assetId) public payable {
         require(_assetId <= id && _assetId != 0);
         assets[_assetId].ownedBy = _newOwner;
         assets[_assetId].category = AssetCategory.Earned;
         emit AssetOwnerChnaged(_assetId, assets[_assetId].ownedBy, _newOwner, AssetCategory.Earned);
-        return true;
     }
 
-    function setAssetUnsold(uint8 _assetId) validAsset(_assetId) public payable returns (bool _success) {
+    function setAssetUnsold(uint8 _assetId) validAsset(_assetId) public payable {
         require(_assetId <= id && _assetId != 0);
         assets[_assetId].category = AssetCategory.Unsold;
         emit AssetUnsold(_assetId, assets[_assetId].ownedBy, AssetCategory.Unsold);
-        return true;
     }
 
     function getAssetID () public view returns (uint8 _assetId){

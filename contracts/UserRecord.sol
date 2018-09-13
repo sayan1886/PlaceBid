@@ -14,6 +14,11 @@ contract UserRecord {
 
     uint8 stringLimit;
 
+    //Events
+    event UserCreated (string userName, string userEmail);
+    event UserBalnceUpdated (string userEmail, uint8 balance);
+    event UserAssetsupdated (string userEmail, uint assets);
+
     constructor ( ) public {
         stringLimit = 2;
     }
@@ -23,7 +28,7 @@ contract UserRecord {
         _;
     }
 
-    function createUser (string _name, string _userEmail, string _password) public payable returns (bool _creation) {
+    function createUser (string _name, string _userEmail, string _password) public payable {
 
         require(bytes(_name).length >= stringLimit);
         require(bytes(_userEmail).length >= stringLimit);
@@ -34,25 +39,25 @@ contract UserRecord {
         users[_userEmail].userEmail = _userEmail;
         users[_userEmail].password = _password;
         users[_userEmail].balance = 100;
-        return true;
+        emit UserCreated(_name, _userEmail);
     }
     
-    function addAsset (string _userEmail, uint8 _assetId) validUser(_userEmail) public payable returns (bool _success) {
+    function addAsset (string _userEmail, uint8 _assetId) validUser(_userEmail) public payable {
         require(_assetId > 0);
         users[_userEmail].assets.push(_assetId);
-        return true;
+        emit UserAssetsupdated(_userEmail, users[_userEmail].assets.length) ;
     }
 
-    function addBalance (string _userEmail, uint8 _balance) validUser(_userEmail) public payable returns (bool _success) {
+    function addBalance (string _userEmail, uint8 _balance) validUser(_userEmail) public payable {
         require(_balance > 0);
         users[_userEmail].balance += _balance;
-        return true;
+        emit UserBalnceUpdated(_userEmail, users[_userEmail].balance) ;
     }
 
-    function deductBalance (string _userEmail, uint8 _balance) validUser(_userEmail) public payable returns (bool _success) {
+    function deductBalance (string _userEmail, uint8 _balance) validUser(_userEmail) public payable {
         require(_balance > 0);
         users[_userEmail].balance -= _balance;
-        return true;
+        emit UserBalnceUpdated(_userEmail, users[_userEmail].balance) ;
     }
     
     function getAssets (string _userEmail) validUser(_userEmail) public view returns (uint8[] _assets) {

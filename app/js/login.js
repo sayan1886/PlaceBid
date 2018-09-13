@@ -16,7 +16,7 @@ $(function() {
         $(this).addClass('active');
         e.preventDefault();
     });
-
+    watchEvents();
 });
 
 function doLogin() {
@@ -90,4 +90,25 @@ function doRegistration() {
 function ValidateEmail(mail) {
     var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
+}
+
+function watchEvents() {
+    var filter = web3.eth.filter("latest");
+    filter.watch(function(err, block) {
+        // Call get block number on every block
+        if (!err) {
+            console.log("filter : " + block);
+        }
+    });
+
+    var eventsAll = userRecordContract.allEvents({ fromBlock: 'latest' });
+
+    eventsAll.watch(function(err, res) {
+        if (err) {
+            console.log("Error: " + err);
+        } else {
+            //TODO: need to change to events based login and registration
+            console.log("Got an event: " + res);
+        }
+    });
 }
