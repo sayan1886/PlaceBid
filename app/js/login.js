@@ -16,8 +16,31 @@ $(function() {
         $(this).addClass('active');
         e.preventDefault();
     });
-    watchEvents();
 });
+
+window.onload = function() {
+    getContractAddress(function(user_addr, asset_addr, auction_addr, error) {
+        if (error != null) {
+            setStatus("Cannot find network. Please run an Ethereum node or use Metamask.", "error");
+            console.log(error);
+            throw "Cannot load contract address";
+        }
+        setStatus("Succesfully Connected to Ethereum Node.", "success");
+
+        web3.eth.getAccounts(function(err, accs) {
+            if (err != null) {
+                alert("There was an error fetching your accounts.");
+                return;
+            }
+            accounts = accs;
+            account = accounts[0];
+        });
+
+        userRecordContract = UserRecord.at(user_contract_addr);
+        assetRecordContract = AssetRecord.at(asset_contract_addr);
+        auctionRecordContract = AuctionRecord.at(auction_contract_addr);
+    });
+}
 
 function doLogin() {
     var email = document.getElementById("email").value;
