@@ -36,7 +36,7 @@ function watchEvents() {
                                     setStatus("Succesfully uppdated balances.", "success");
                                 }
                             });
-                            if (loggedInUser == previousBidder) {
+                            if (loggedInUser == previousBidder && customElements > previousBid) {
                                 showOutBidded(assetName);
                             }
                         }
