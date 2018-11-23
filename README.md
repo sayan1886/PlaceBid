@@ -1,15 +1,19 @@
+# PlaceBid : Online Auction Platform
 
-Intent— An online auction platform based on blockchain would be great improvement over current auction systems.
+## Intent— 
+An online auction platform based on blockchain would be great improvement over current auction systems.
 
 All the online auction platforms that currently exist are based on one centralized operation. They rely on proprietary and closed software. As a result of this centralization, these platforms share the same limitations. i.e. Lack of transparency, Closed and Limited.
 
 With the help of blockchain structure auction data and bids will be impossible to falsify. The platform will be transparent, reliable and scalable. With the help of this market anyone can place any item to auction and bidder can bid and buy items without any fraud.
 
-Blockchain— The world of Auction is a very tedious thing to manage, no matter how well you prepare the system to work. There are many analysis which Auction is accounted for, fails to achieve its goal. Situation such as time sensitivity, entry barriers for the ones who bid, no certainty that the amount you bid is accepted, increase in the amount of bid leads to the idea of needing more secure transactions for which we implemented the concept of blockchain where every transactions is noted down. The result of the auction wants certainty of their bids, not anonymous result.
+## Blockchain— 
+The world of Auction is a very tedious thing to manage, no matter how well you prepare the system to work. There are many analysis which Auction is accounted for, fails to achieve its goal. Situation such as time sensitivity, entry barriers for the ones who bid, no certainty that the amount you bid is accepted, increase in the amount of bid leads to the idea of needing more secure transactions for which we implemented the concept of blockchain where every transactions is noted down. The result of the auction wants certainty of their bids, not anonymous result.
 
 There&#39;s where we tried to introduce Blockchain to make transactions more transparent. Every transaction is trustworthy and made available to the bidders as soon as they bid, to know if their bid is accepted or rejected for the product. The transactions mainly looks after the amount and the time of the bidders, where you cannot break the block, if tried most of the connecting block would also be destroyed. This makes the transaction secure and hence its use in Auction.
 
-Objectives— The core objectives of this system are outlined below:
+## Objectives— 
+The core objectives of this system are outlined below:
 
 1. Owner of an item announces that an item is up for sale, sets the base price and starts the timer.
 2. Each bidder has a fixed amount disposable for auction in his/her wallet. Bidder can&#39;t bid more than the wallet contents.
@@ -20,7 +24,8 @@ Objectives— The core objectives of this system are outlined below:
 7. If there is no bidder, mark the item as unsold.
 8. Each participant in the ecosystem can be an owner or a bidder (not both at once).
 
-Actors—Following are main Actors of the system:
+## Actors—
+Following are main Actors of the system:
 
 
 - User : User of system may of two type Seller and Buyer/Bidder. Once seller set up product on the system will be available to all the bidders. Seller can&#39;t bid for his own product. On the other hand bidder or buyer may place bid for any available assets.
@@ -32,7 +37,8 @@ Actors—Following are main Actors of the system:
 
 - Time Box: It is the driving factor of the system, once the time box set by the seller in the system, it continue to run to decide whether the product will be Sold or remain Unsold at the end of the time box. It also decide who wins the auction by placing highest Bid in terms of amount.
 
-Design—Design is the most important factor to sustain in the market. You need to be scalable, adapt changes,  secured and cost effective.
+## Design—
+Design is the most important factor to sustain in the market. You need to be scalable, adapt changes,  secured and cost effective.
 
 Most critical part of this system is visibility to all and need to be most secured and protective for user data. Here comes the Ethereum, it will act as Public Ledger and also be irreversible in nature.
 
@@ -46,8 +52,8 @@ System—The system will be relying on the backend blockchain layer, and it will
 
 
 
-System Flow—
+## System Flow—
 
 
-System Diagram—
+## System Diagram—
 
