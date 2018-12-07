@@ -7,19 +7,19 @@ contract AuctionRecord {
     enum AuctionResult {Sold, Unsold, Pending} //0,1,2
 
     //Events
-    event AuctionCreated(uint8 auctionId, string assetName, string ownedBy, uint8 basePrice, uint256 expiry);
-    event AuctionBidPlaced(uint8 auctionId, string assetName, string owner, uint previousBid, string previousBidder, uint currentBid, string currentBidder);
-    event AuctionClosed(uint8 auctionId, uint8 assetId, string owner, uint basePrice, uint currentPrice, string currentBidder, AuctionStatus status, AuctionResult result);
+    event AuctionCreated(uint8 auctionId, bytes assetName, bytes ownedBy, uint8 basePrice, uint256 expiry);
+    event AuctionBidPlaced(uint8 auctionId, bytes assetName, bytes owner, uint previousBid, bytes previousBidder, uint currentBid, bytes currentBidder);
+    event AuctionClosed(uint8 auctionId, uint8 assetId, bytes owner, uint basePrice, uint currentPrice, bytes currentBidder, AuctionStatus status, AuctionResult result);
 
     struct Auction {
         uint8 auctionId;
-        string assetName;
+        bytes assetName;
         uint8 assetId;
-        string assetOwner; //userEmail
+        bytes assetOwner; //userEmail
         uint8 basePrice;
         uint256 auctionExpiry;
         uint8 currentBid; //in amount
-        string currentBidder; //Owner and Biider will not be same
+        bytes currentBidder; //Owner and Biider will not be same
 
         AuctionStatus status;
         AuctionResult result;
@@ -48,7 +48,7 @@ contract AuctionRecord {
     }
     
     function createAuction 
-    ( uint8 _assetId, string _assetName, string _assetOwner, uint8 _basePrice , uint256 _auctionExpiry) 
+    ( uint8 _assetId, bytes _assetName, bytes _assetOwner, uint8 _basePrice , uint256 _auctionExpiry) 
     public payable {
         uint8 _auctionId = ++id;
         auctions[_auctionId].auctionId = _auctionId;
@@ -73,7 +73,7 @@ contract AuctionRecord {
         emit AuctionClosed(_auctionId, auctions[_auctionId].assetId, auctions[_auctionId].assetOwner, auctions[_auctionId].basePrice, auctions[_auctionId].currentBid, auctions[_auctionId].currentBidder, auctions[_auctionId].status, auctions[_auctionId].result);
     }
     
-    function placeBid (uint8 _auctionId, uint8 _bid, string _bidder) 
+    function placeBid (uint8 _auctionId, uint8 _bid, bytes _bidder) 
     validAuction(_auctionId) auctionActive(_auctionId) highestBid(_auctionId, _bid) 
     public payable {
         auctions[_auctionId].currentBid = _bid;
@@ -92,13 +92,13 @@ contract AuctionRecord {
 
 
     function getAuction(uint8 _auctionId) validAuction(_auctionId) public view returns 
-    (uint8 _assetId, string _assetName, string _assetOwner, uint8 _basePrice,uint8 _currentBid, string _currentBidder, uint256 _auctionExpiry, AuctionResult _result, AuctionStatus _status) {
+    (uint8 _assetId, bytes _assetName, bytes _assetOwner, uint8 _basePrice,uint8 _currentBid, bytes _currentBidder, uint256 _auctionExpiry, AuctionResult _result, AuctionStatus _status) {
         Auction memory a = auctions[_auctionId];
         // bool submitBid = (a.status != AuctionStatus.End && !compareTo(bidder, a.currentBidder) && !compareTo(bidder, a.assetOwner));
         return (_auctionId, a.assetName, a.assetOwner, a.basePrice, a.currentBid, a.currentBidder, a.auctionExpiry, a.result, a.status);
     }
 
-    function compareTo (string _base, string _value) internal pure  returns (bool) {
+    function compareTo (bytes _base, bytes _value) internal pure  returns (bool) {
         bytes memory _baseBytes = bytes(_base);
         bytes memory _valueBytes = bytes(_value);
 
