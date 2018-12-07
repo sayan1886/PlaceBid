@@ -24,7 +24,7 @@
             }
         },
         "difficulty": "0x20000",
-        "gasLimit": "0x1fffffffff"
+        "gasLimit": "0x0fffffffff"
     },
     "accounts": {
         "0x0000000000000000000000000000000000000001": {
