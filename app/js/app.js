@@ -65,3 +65,11 @@ function retriveFromLocal() {
     account = localStorage.getItem("account", account);
     loggedInUser = localStorage.getItem("loggedInUser", loggedInUser);
 }
+
+function getBytes(string) {
+    return web3.fromAscii(string);
+}
+
+function getString(bytes) {
+    return web3.toAscii(string);
+}

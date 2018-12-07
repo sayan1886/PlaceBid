@@ -18,17 +18,17 @@ function watchEvents() {
         } else {
             console.log("Got an event: " + res);
             if (res.event == "AuctionBidPlaced") {
-                previousBidder = res.args["previousBidder"];
-                currentBidder = res.args["currentBidder"];
-                previousBid = res.args["previousBid"]['c'][0];
-                currentBid = res.args["currentBid"]['c'][0];
-                assetName = res.args["assetName"];
-                userRecordContract.deductBalance(currentBidder, currentBid, { from: account }, function(err, res) {
+                previousBidder = getString(res.args["previousBidder"]);
+                currentBidder = getString(res.args["currentBidder"]);
+                previousBid = getString(res.args["previousBid"]['c'][0]);
+                currentBid = getString(res.args["currentBid"]['c'][0]);
+                assetName = getString(res.args["assetName"]);
+                userRecordContract.deductBalance(getBytes(currentBidder), currentBid, { from: account }, function(err, res) {
                     if (err != null) {
                         setStatus("There is something went wrong: " + err.message, "error");
                     } else {
                         if (previousBidder.length > 0) {
-                            userRecordContract.deductBalance(previousBidder, previousBid, { from: account }, function(err, res) {
+                            userRecordContract.deductBalance(getBytes(previousBidder), previousBid, { from: account }, function(err, res) {
                                 if (err != null) {
                                     setStatus("There is something went wrong: " + err.message, "error");
                                 } else {
@@ -143,12 +143,12 @@ function createAuction() {
         setStatus("Initiating Auction... (please wait)", "warning");
         showSpinner();
         document.getElementById("auction-form").reset();
-        createAsset(assetName, function(err, res) {
+        createAsset(getBytes(assetName), function(err, res) {
             if (err != null) {
                 setStatus("There is something went wrong: " + err.message, "error");
                 hideSpinner();
             } else {
-                auctionRecordContract.createAuction(res, assetName, loggedInUser, assetPrice, expiration, { from: account }, function(err, res) {
+                auctionRecordContract.createAuction(res, getBytes(assetName), getBytes(loggedInUser), assetPrice, expiration, { from: account }, function(err, res) {
                     if (err != null) {
                         setStatus("There is something went wrong: " + err.message, "error");
                         hideSpinner();
@@ -217,7 +217,7 @@ function isOwner(owner) {
 function createBid(auctionid, itemPrice, itemName) {
     setStatus("Placing Bid for You...(please wait).", "warning");
     showSpinner();
-    userRecordContract.getBalance(loggedInUser, function(err, res) {
+    userRecordContract.getBalance(getBytes(loggedInUser), function(err, res) {
         if (err) {
             hideSpinner();
             setStatus("There is something went wrong: " + err, "error");
@@ -228,7 +228,7 @@ function createBid(auctionid, itemPrice, itemName) {
                 setStatus("Insufficuent Balance for this Bid: ", "error");
                 showInsufficientBalanceAlert(balance, itemPrice, itemName)
             } else {
-                auctionRecordContract.placeBid(auctionid, itemPrice, loggedInUser, { from: account }, function(err, res) {
+                auctionRecordContract.placeBid(auctionid, itemPrice, getBytes(loggedInUser), { from: account }, function(err, res) {
                     hideSpinner();
                     if (err) {
                         setStatus("There is something went wrong: ", "error");

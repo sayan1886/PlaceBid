@@ -51,7 +51,7 @@ function doLogin() {
     setStatus("Initiating Authentication... (please wait)", "warning");
     showSpinner();
 
-    userRecordContract.isValidPassword.call(email, pass, function(err, res) {
+    userRecordContract.isValidPassword.call(getBytes(email), getBytes(pass), function(err, res) {
         hideSpinner();
         if (err) {
             setStatus("There is something went wrong: " + err, "error");
@@ -60,7 +60,7 @@ function doLogin() {
             loggedInUser = email;
             saveToLocal();
             setTimeout(function() {
-                window.location.href = "./home.html"; //will redirect to your blog page (an ex: blog.html)
+                window.location.href = "./home.html"; //will redirect to home page
             }, delay);
         } else {
             setStatus("Authentication Unsuccessfull", "warning");
@@ -86,13 +86,13 @@ function doRegistration() {
         setStatus("Initiating Registration... (please wait)", "warning");
         showSpinner();
 
-        userRecordContract.createUser(name, email, pass, { from: account }, function(err, txnId) {
+        userRecordContract.createUser(getBytes(name), getBytes(email), getBytes(pass), { from: account }, function(err, txnId) {
             console.log("Transaction id is : " + txnId);
             hideSpinner();
             if (txnId.length > 0) {
 
-                userRecordContract.getUserName.call(email, function(err, res) {
-                    if (res === name) {
+                userRecordContract.getUserName.call(getBytes(email), function(err, res) {
+                    if (res === getBytes(name) {
                         setStatus("Registration Succesfull with Transaction Id: " + txnId, "success");
                         loggedInUser = email;
                         saveToLocal();

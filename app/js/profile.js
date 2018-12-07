@@ -7,14 +7,14 @@ function updateProfile() {
         } else if (res) {
             name = res;
             // console.log(name);
-            userRecordContract.getBalance(loggedInUser, function(err, res) {
+            userRecordContract.getBalance(getBytes(loggedInUser), function(err, res) {
                 hideSpinner();
                 if (err) {
                     setStatus("There is something went wrong: " + err, "error");
                 } else if (res) {
                     balance = res['c'][0];
                     // console.log(balance);
-                    userRecordContract.getAssets(loggedInUser, function(err, res) {
+                    userRecordContract.getAssets(getBytes(loggedInUser), function(err, res) {
                         hideSpinner();
                         if (err) {
                             setStatus("There is something went wrong: " + err, "error");
@@ -57,7 +57,7 @@ function createAsset(assetName, callback) {
         // Call get block number on every block
         // updateBlockNumber();
     });
-    assetRecordContract.createAsset(assetName, loggedInUser, { from: account }, function(err, res) {
+    assetRecordContract.createAsset(getBytes(assetName), getBytes(loggedInUser), { from: account }, function(err, res) {
         if (err != null) {
             setStatus("There is something went wrong: " + err.message, "error");
         } else {
@@ -66,7 +66,7 @@ function createAsset(assetName, callback) {
                     setStatus("There is something went wrong: " + err.message, "error");
                 } else {
                     assetid = res['c'][0] + 1;
-                    userRecordContract.addAsset(loggedInUser, assetid, { from: account }, function(err, res) {
+                    userRecordContract.addAsset(getBytes(loggedInUser), assetid, { from: account }, function(err, res) {
                         if (err != null) {
                             callback(err, res);
                         } else {
@@ -84,7 +84,7 @@ function addBalance() {
     var balance = 100;
     setStatus("Updating your balance.. (please wait)", "warning");
     showSpinner();
-    userRecordContract.addBalance(loggedInUser, balance, { from: account }, function(err, res) {
+    userRecordContract.addBalance(getBytes(loggedInUser), balance, { from: account }, function(err, res) {
         hideSpinner();
         if (err) {
             setStatus("There is something went wrong: " + err, "error");
