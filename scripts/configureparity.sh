@@ -71,7 +71,7 @@ mv ${TMP_CHAIN_1_NAME} ${MAIN_CHAIN_NAME}
 
 # sh ${CWD}/scripts/enable_private_tx.sh
 
-# sleep 5
+sleep 5
 
 sh ${CWD}/scripts/stopparity.sh
 

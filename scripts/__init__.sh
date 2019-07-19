@@ -15,26 +15,19 @@ PARITY_LOG="/var/log/parity"
 CWD=$(pwd)
 VERBOSE="yes"
 
-echo ${ROOT_PWD} | sudo -S mkdir -p ${PARITY_HOME}
-echo ${ROOT_PWD} | sudo -S mkdir -p ${PARITY_LOG}/{1,2,3,4}
-
-echo ${ROOT_PWD} | sudo -S mkdir -p /etc/parity/data/.local/share/io.parity.ethereum/
-echo ${ROOT_PWD} | sudo -S mkdir -p /etc/parity/data/.local/share/io.parity.ethereum/
-
-echo ${ROOT_PWD} | sudo -S cp ${CWD}/configs/*.* ${PARITY_HOME}
-
-echo ${ROOT_PWD} | sudo -S chmod -R 755 ${PARITY_HOME}
-echo ${ROOT_PWD} | sudo -S chown -R $(whoami) ${PARITY_HOME}
-
 MAIN_CHAIN_NAME="${PARITY_HOME}/chain.json"
 TMP_CHAIN_1_NAME="${TMP_DIR}/chain1.json"
 TMP_CHAIN_2_NAME="${TMP_DIR}/chain2.json"
 TMP_CHAIN_3_NAME="${TMP_DIR}/chain3.json"
 
-NODE1_PWD=$(cat ${PARITY_HOME}/node1.pwds)
-NODE2_PWD=$(cat ${PARITY_HOME}/node2.pwds)
-NODE3_PWD=$(cat ${PARITY_HOME}/node3.pwds)
-NODE4_PWD=$(cat ${PARITY_HOME}/node4.pwds)
+# NODE1_PWD=""
+# NODE2_PWD=""
+# NODE3_PWD=""
+# NODE4_PWD=""
+NODE1_PWD=$NODE1_PWD$(cat ${PARITY_HOME}/node1.pwds)
+NODE2_PWD=$NODE2_PWD$(cat ${PARITY_HOME}/node2.pwds)
+NODE3_PWD=$NODE3_PWD$(cat ${PARITY_HOME}/node3.pwds)
+NODE4_PWD=$NODE4_PWD$(cat ${PARITY_HOME}/node4.pwds)
 
 if [ "$(uname)" == "Darwin" ]; then
     IP=$(ipconfig getifaddr en0)
