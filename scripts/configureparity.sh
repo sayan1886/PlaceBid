@@ -1,63 +1,82 @@
 #!/bin/bash -e
 
-VERBOSE="no"
+. ./scripts/__init__.sh $@
 
 # Checking the verbosity of the script
 if [ ${VERBOSE} == "yes" ]; then
     set -x
 fi
 
-PARITY_HOME="/etc/parity"
+echo ${ROOT_PWD} | sudo -S curl --data '{"method":"parity_enode","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST ${IP}:8545 | jq '.result' | tr -d '"' >> ${PARITY_HOME}/peers.list 
+echo ${ROOT_PWD} | sudo -S curl --data '{"method":"parity_enode","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST ${IP}:8547 | jq '.result' | tr -d '"' >> ${PARITY_HOME}/peers.list 
+echo ${ROOT_PWD} | sudo -S curl --data '{"method":"parity_enode","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST ${IP}:8549 | jq '.result' | tr -d '"' >> ${PARITY_HOME}/peers.list 
+echo ${ROOT_PWD} | sudo -S curl --data '{"method":"parity_enode","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST ${IP}:8551 | jq '.result' | tr -d '"' >> ${PARITY_HOME}/peers.list 
+
+SIGNER_NODE1=$(curl --data '{"jsonrpc":"2.0","method":"parity_newAccountFromPhrase","params":["'${NODE1_PWD}'", "'${NODE1_PWD}'"],"id":0}' -H "Content-Type: application/json" -X POST ${IP}:8545 | jq '.result')
+SIGNER_NODE2=$(curl --data '{"jsonrpc":"2.0","method":"parity_newAccountFromPhrase","params":["'${NODE2_PWD}'", "'${NODE2_PWD}'"],"id":0}' -H "Content-Type: application/json" -X POST ${IP}:8547 | jq '.result')
+SIGNER_NODE3=$(curl --data '{"jsonrpc":"2.0","method":"parity_newAccountFromPhrase","params":["'${NODE3_PWD}'", "'${NODE3_PWD}'"],"id":0}' -H "Content-Type: application/json" -X POST ${IP}:8549 | jq '.result')
+SIGNER_NODE4=$(curl --data '{"jsonrpc":"2.0","method":"parity_newAccountFromPhrase","params":["'${NODE4_PWD}'", "'${NODE4_PWD}'"],"id":0}' -H "Content-Type: application/json" -X POST ${IP}:8551 | jq '.result')
+
+VALIDATOR_LIST=[${SIGNER_NODE1},${SIGNER_NODE2},${SIGNER_NODE3},${SIGNER_NODE4}]
+jq '.engine.authorityRound.params.validators.multi += {"0":{"list":'${VALIDATOR_LIST}'}}' $MAIN_CHAIN_NAME > $TMP_CHAIN_1_NAME
 
 if [ "$(uname)" == "Darwin" ]; then
-    IP=$(ipconfig getifaddr en0)
+
+    sed -i '' 's/^#unlock = \[\"\"\]/unlock = ['${SIGNER_NODE1}']/g'  ${PARITY_HOME}/node1.toml
+    sed -i '' 's/^#author = \"\"/author = '${SIGNER_NODE1}'/g'  ${PARITY_HOME}/node1.toml
+    sed -i '' 's/^#engine_signer = \"\"/engine_signer = '${SIGNER_NODE1}'/g'  ${PARITY_HOME}/node1.toml
+
+    sed -i '' 's/^#unlock = \[\"\"\]/unlock = ['${SIGNER_NODE2}']/g'  ${PARITY_HOME}/node2.toml
+    sed -i '' 's/^#author = \"\"/author = '${SIGNER_NODE2}'/g'  ${PARITY_HOME}/node2.toml
+    sed -i '' 's/^#engine_signer = \"\"/engine_signer = '${SIGNER_NODE2}'/g'  ${PARITY_HOME}/node2.toml
+
+    sed -i '' 's/^#unlock = \[\"\"\]/unlock = ['${SIGNER_NODE3}']/g'  ${PARITY_HOME}/node3.toml
+    sed -i '' 's/^#author = \"\"/author = '${SIGNER_NODE3}'/g'  ${PARITY_HOME}/node3.toml
+    sed -i '' 's/^#engine_signer = \"\"/engine_signer = '${SIGNER_NODE3}'/g'  ${PARITY_HOME}/node3.toml
+
+    sed -i '' 's/^#unlock = \[\"\"\]/unlock = ['${SIGNER_NODE4}']/g'  ${PARITY_HOME}/node4.toml
+    sed -i '' 's/^#author = \"\"/author = '${SIGNER_NODE4}'/g'  ${PARITY_HOME}/node4.toml
+    sed -i '' 's/^#engine_signer = \"\"/engine_signer = '${SIGNER_NODE4}'/g'  ${PARITY_HOME}/node4.toml
+
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-    IP=$(hostname -I)
-# elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
-#     # Do something under 32 bits Windows NT platform
-# elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]; then
-#     # Do something under 64 bits Windows NT platform
+    
+    sed -i 's/^#unlock = \[\"\"\]/unlock = ['${SIGNER_NODE1}']/g'  ${PARITY_HOME}/node1.toml
+    sed -i 's/^#author = \"\"/author = '${SIGNER_NODE1}'/g'  ${PARITY_HOME}/node1.toml
+    sed -i 's/^#engine_signer = \"\"/engine_signer = '${SIGNER_NODE1}'/g'  ${PARITY_HOME}/node1.toml
+
+    sed -i 's/^#unlock = \[\"\"\]/unlock = ['${SIGNER_NODE2}']/g'  ${PARITY_HOME}/node2.toml
+    sed -i 's/^#author = \"\"/author = '${SIGNER_NODE2}'/g'  ${PARITY_HOME}/node2.toml
+    sed -i 's/^#engine_signer = \"\"/engine_signer = '${SIGNER_NODE2}/'g'  ${PARITY_HOME}/node2.toml
+
+    sed -i 's/^#unlock = \[\"\"\]/unlock = ['${SIGNER_NODE3}']/g'  ${PARITY_HOME}/node3.toml
+    sed -i 's/^#author = \"\"/author = '${SIGNER_NODE3}'/g'  ${PARITY_HOME}/node3.toml
+    sed -i 's/^#engine_signer = \"\"/engine_signer = '${SIGNER_NODE3}'/g'  ${PARITY_HOME}/node3.toml
+
+    sed -i 's/^#unlock = \[\"\"\]/unlock = ['${SIGNER_NODE4}']/g'  ${PARITY_HOME}/node4.toml
+    sed -i 's/^#author = \"\"/author = '${SIGNER_NODE4}'/g'  ${PARITY_HOME}/node4.toml
+    sed -i 's/^#engine_signer = \"\"/engine_signer = '${SIGNER_NODE4}'/g'  ${PARITY_HOME}/node4.toml
+    
 fi
 
-sudo curl --data '{"method":"parity_enode","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST $IP:8545 | jq '.result' | tr -d '"' >> $PARITY_HOME/peers.list 
-sudo curl --data '{"method":"parity_enode","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST $IP:8547 | jq '.result' | tr -d '"' >> $PARITY_HOME/peers.list 
-sudo curl --data '{"method":"parity_enode","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST $IP:8549 | jq '.result' | tr -d '"' >> $PARITY_HOME/peers.list 
+jq '.accounts += {'${SIGNER_NODE1}':{"balance":"10000000000000000000000"}}' ${TMP_CHAIN_1_NAME} > ${TMP_CHAIN_2_NAME}
+jq '.accounts += {'${SIGNER_NODE2}':{"balance":"10000000000000000000000"}}'  ${TMP_CHAIN_2_NAME} > ${TMP_CHAIN_1_NAME}
+jq '.accounts += {'${SIGNER_NODE3}':{"balance":"10000000000000000000000"}}'  ${TMP_CHAIN_1_NAME} > ${TMP_CHAIN_2_NAME}
+jq '.accounts += {'${SIGNER_NODE4}':{"balance":"10000000000000000000000"}}'  ${TMP_CHAIN_2_NAME} > ${TMP_CHAIN_1_NAME}
 
-curl --data '{"jsonrpc":"2.0","method":"parity_newAccountFromPhrase","params":["node1", "node1"],"id":0}' -H "Content-Type: application/json" -X POST $IP:8545
-curl --data '{"jsonrpc":"2.0","method":"parity_newAccountFromPhrase","params":["node2", "node2"],"id":0}' -H "Content-Type: application/json" -X POST $IP:8547
-curl --data '{"jsonrpc":"2.0","method":"parity_newAccountFromPhrase","params":["node3", "node3"],"id":0}' -H "Content-Type: application/json" -X POST $IP:8549
+mv ${TMP_CHAIN_1_NAME} ${MAIN_CHAIN_NAME}
 
-# curl --data '{"jsonrpc":"2.0","method":"parity_newAccountFromPhrase","params":["user1", "user1"],"id":0}' -H "Content-Type: application/json" -X POST localhost:8545
-# curl --data '{"jsonrpc":"2.0","method":"parity_newAccountFromPhrase","params":["user2", "user2"],"id":0}' -H "Content-Type: application/json" -X POST localhost:8545
-# curl --data '{"jsonrpc":"2.0","method":"parity_newAccountFromPhrase","params":["user3", "user3"],"id":0}' -H "Content-Type: application/json" -X POST localhost:8545
-# curl --data '{"jsonrpc":"2.0","method":"parity_newAccountFromPhrase","params":["user4", "user4"],"id":0}' -H "Content-Type: application/json" -X POST localhost:8545
-# curl --data '{"jsonrpc":"2.0","method":"parity_newAccountFromPhrase","params":["user5", "user5"],"id":0}' -H "Content-Type: application/json" -X POST localhost:8545
-# curl --data '{"jsonrpc":"2.0","method":"parity_newAccountFromPhrase","params":["user6", "user6"],"id":0}' -H "Content-Type: application/json" -X POST localhost:8545
-# curl --data '{"jsonrpc":"2.0","method":"parity_newAccountFromPhrase","params":["user7", "user7"],"id":0}' -H "Content-Type: application/json" -X POST localhost:8545
-# curl --data '{"jsonrpc":"2.0","method":"parity_newAccountFromPhrase","params":["user8", "user8"],"id":0}' -H "Content-Type: application/json" -X POST localhost:8545
-# curl --data '{"jsonrpc":"2.0","method":"parity_newAccountFromPhrase","params":["user9", "user9"],"id":0}' -H "Content-Type: application/json" -X POST localhost:8545
-# curl --data '{"jsonrpc":"2.0","method":"parity_newAccountFromPhrase","params":["user10", "user10"],"id":0}' -H "Content-Type: application/json" -X POST localhost:8545
+# sh ${CWD}/scripts/add_monitor.sh
 
-sudo ex -sc 'g/^\s*#/s/#//' -cx $PARITY_HOME/config1.toml
-sudo ex -sc 'g/^\s*#/s/#//' -cx $PARITY_HOME/config2.toml
-sudo ex -sc 'g/^\s*#/s/#//' -cx $PARITY_HOME/config3.toml
+# sleep 5
 
-# curl --data '{"method":"personal_unlockAccount","params":["0x00d695cd9b0ff4edc8ce55b493aec495b597e235","user1",null],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
-# curl --data '{"method":"personal_unlockAccount","params":["0x001ca0bb54fcc1d736ccd820f14316dedaafd772","user2",null],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
-# curl --data '{"method":"personal_unlockAccount","params":["0x00cb25f6fd16a52e24edd2c8fd62071dc29a035c","user3",null],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
-# curl --data '{"method":"personal_unlockAccount","params":["0x0046f91449e4b696d48c9dd10703cb589649c265","user4",null],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
-# curl --data '{"method":"personal_unlockAccount","params":["0x00cc5a03e7166baa2df1d449430581d92abb0a1e","user5",null],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
-# curl --data '{"method":"personal_unlockAccount","params":["0x0095e961b3a00f882326bbc8f0a469e5b56e858a","user6",null],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
-# curl --data '{"method":"personal_unlockAccount","params":["0x0008fba8d298de8f6ea7385d447f4d3252dc0880","user7",null],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
-# curl --data '{"method":"personal_unlockAccount","params":["0x0094bc2c3b585928dfeaf85e96ba57773c0673c1","user8",null],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
-# curl --data '{"method":"personal_unlockAccount","params":["0x0002851146112cef5d360033758c470689b72ea7","user9",null],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
-# curl --data '{"method":"personal_unlockAccount","params":["0x002227d6a35ed31076546159061bd5d3fefe9f0a","user10",null],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
+# sh ${CWD}/scripts/enable_private_tx.sh
 
-sleep 2
+# sleep 5
 
-sh ./scripts/stopparity.sh 
+sh ${CWD}/scripts/stopparity.sh
 
 sleep 5
 
-sh ./scripts/startparity.sh
+sh ${CWD}/scripts/startparity.sh
 
+sleep 5

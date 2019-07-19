@@ -1,13 +1,11 @@
 #!/bin/bash -e
 
-VERBOSE="no"
+. ./scripts/__init__.sh $@
 
 # Checking the verbosity of the script
 if [ ${VERBOSE} == "yes" ]; then
     set -x
 fi
 
-PARITY_HOME="/etc/parity"
-
 # Start node3
-sudo parity --config $PARITY_HOME/config3.toml --rpccorsdomain "*" --jsonrpc-cors null
+echo ${ROOT_PWD} | sudo -S parity --config ${PARITY_HOME}/node3.toml

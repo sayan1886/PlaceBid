@@ -1,0 +1,149 @@
+[parity]
+mode = "active"
+mode_timeout = 300
+mode_alarm = 3600
+public_node = false
+
+chain = "/etc/parity/chain.json"
+base_path = "/etc/parity/data/.local/share/io.parity.ethereum/4"
+db_path = "/etc/parity/data/.local/share/io.parity.ethereum/4/chains"
+keys_path = "/etc/parity/data/.local/share/io.parity.ethereum/4/keys"
+identity = "private-transaction-node4"
+light = false
+
+[account]
+#unlock = [""]
+password=["/etc/parity/node4.pwds"]
+keys_iterations = 10240
+
+[private_tx]
+sstore_url = "http://127.0.0.1:8016"
+enabled = true
+#account = ""
+#signer = ""
+#validators = []
+passwords = "node4.pwds"
+
+[ui]
+force = false
+disable = true
+port = 8184
+interface = "0.0.0.0"
+path = "/etc/parity/data/.local/share/io.parity.ethereum/4/signer"
+
+[network]
+port = 30306
+min_peers = 25
+max_peers = 50
+nat = "any"
+id = 4
+bootnodes = []
+discovery = false
+warp = true
+allow_ips = "all"
+snapshot_peers = 0
+max_pending_peers = 64
+no_serve_light = false
+
+reserved_only = true
+reserved_peers = "/etc/parity/peers.list"
+
+[rpc]
+disable = false
+port = 8551
+interface = "0.0.0.0"
+cors = ["all"]
+apis = ["all"]
+hosts = ["all"]
+
+[websockets]
+disable = true
+port = 8552
+interface = "0.0.0.0"
+origins = ["all"]
+apis = ["all"]
+hosts = ["all"]
+
+[ipc]
+disable = true
+path = "/etc/parity/data/.local/share/io.parity.ethereum/4/jsonrpc.ipc"
+apis = ["all"]
+
+# [dapps]
+# disable = true
+# path = "/etc/parity/data/.local/share/io.parity.ethereum/4/dapps"
+
+[secretstore]
+disable = false
+disable_http = false
+acl_contract = "none"     # Insecure, will be changed later on
+server_set_contract = "none"
+#self_secret = ""
+nodes = []
+http_interface = "0.0.0.0"
+http_port = 8016
+interface = "0.0.0.0"
+port = 8017
+path = "/etc/parity/data/.local/share/io.parity.ethereum/3/secretstore"
+
+[ipfs]
+enable = false
+port = 5004
+interface = "0.0.0.0"
+cors = []
+hosts = ["none"]
+
+[mining]
+#author = ""
+#engine_signer = ""
+force_sealing = true
+reseal_on_txs = "all"
+reseal_min_period = 0
+reseal_max_period = 1000
+work_queue_size = 20
+relay_set = "cheap"
+usd_per_tx = "0.0025"
+usd_per_eth = "auto"
+price_update_period = "hourly"
+gas_floor_target = "0x1fffffffffffff"
+min_gas_price = 0
+gas_cap = "0"
+tx_queue_size = 8192
+#tx_queue_gas = "off"
+#tx_queue_strategy = "gas_factor"
+#tx_queue_ban_count = 1
+#tx_queue_ban_time = 180 #s
+tx_gas_limit = "0x1fffffffffffff"
+tx_time_limit = 100 #ms
+extra_data = "Private Transaction Parity"
+remove_solved = false
+notify_work = ["http://localhost:3004"]
+refuse_service_transactions = false
+
+
+[footprint]
+tracing = "auto"
+pruning = "auto"
+pruning_history = 64
+pruning_memory = 500
+cache_size_db = 64
+cache_size_blocks = 8
+cache_size_queue = 50
+cache_size_state = 25
+cache_size = 128 # Overrides above caches with total size
+fast_and_loose = false
+db_compaction = "ssd"
+fat_db = "auto"
+scale_verifiers = true
+num_verifiers = 6
+
+[snapshots]
+disable_periodic = false
+
+#[vm]
+#jit = false
+
+[misc]
+logging = "transaction_pool=trace,txqueue=trace,ethcore_private_tx=trace,own_tx=trace,secretstore=trace,secretstore_net=trace"
+log_file = "/var/log/parity/4/parity.node.log"
+color = true
